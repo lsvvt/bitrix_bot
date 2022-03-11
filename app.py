@@ -84,6 +84,7 @@ def webhook():
                     title = rjson["result"]["task"]["title"]
                     print(rjson)
                     if rjson["result"]["task"]["parentId"] is None:
+                        print("resp = ", f"https://qmioc.bitrix24.ru/rest/16/{api_token}/tasks.task.list?filter[title]={title}")
                         response = requests.get(f"https://qmioc.bitrix24.ru/rest/16/{api_token}/tasks.task.list?filter[title]={title}")
                         rjson = response.json()
                         #print("list = ", rjson)
