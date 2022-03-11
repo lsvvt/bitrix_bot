@@ -48,8 +48,9 @@ tg_users = {
 "70" :  436772955,  # Георгий Слушко None
 }
 
-def form_name(id, name):
-    return f'<a href="tg://user?id={tg_users[id]}">{name}</a>'
+def form_name(user_info):
+    idn, name = get_users(user_info)
+    return f'<a href="tg://user?id={tg_users[idn]}">{name}</a>'
 
 
 
@@ -70,7 +71,7 @@ def gen_message_from_tasks(tasks, task_id):
     responsible_users = []
 
     for task in tasks:
-        responsible_users.append(form_name(get_users(task["responsible"])))
+        responsible_users.append(form_name(task["responsible"]))
 
     responsible_users = ", ".join(responsible_users)
 
