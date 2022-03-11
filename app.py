@@ -1,8 +1,13 @@
 from flask import Flask, request, abort
-from secret_information import my_token, chat_ids, app_token, api_token
 import telebot
 import requests
 import datetime
+import os
+
+my_token = os.environ['my_token']
+chat_ids = [int(os.environ['chat_ids'])]
+app_token = os.environ['app_token']
+api_token = os.environ['api_token']
 
 app = Flask(__name__)
 
