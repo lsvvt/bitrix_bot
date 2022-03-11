@@ -5,7 +5,7 @@ import datetime
 import os
 
 my_token = os.environ['my_token']
-chat_ids = [int(os.environ['chat_ids'])]
+chat_ids = list(map(lambda x: int(x), os.environ['chat_ids'].split(";")))
 app_token = os.environ['app_token']
 api_token = os.environ['api_token']
 
@@ -54,13 +54,13 @@ def form_name(user_info):
 
 
 
-def send(msg):
+def send(msg, chat_id):
     """
     Send a message to a telegram user or group specified on chatId
     chat_id must be a number!
     """
-    for chat_id in chat_ids:
-        bot.send_message(chat_id, msg, parse_mode='HTML')
+
+    bot.send_message(chat_id, msg, parse_mode='HTML')
 
 def get_users(user_info):
     return user_info["id"], user_info["name"]
@@ -95,6 +95,7 @@ def gen_message_from_tasks(tasks, task_id):
     return message
 
 
+tags = ["bottest", "bot"]
 @app.route('/webhook', methods=['POST'])
 def webhook():
     if request.method == 'POST':
@@ -115,14 +116,17 @@ def webhook():
                     print(rjson)
                     if rjson["result"]["task"]["parentId"] is None:
                         print("resp = ", f"https://qmioc.bitrix24.ru/rest/16/{api_token}/tasks.task.list?filter[title]={title}")
-                        response = requests.get(f"https://qmioc.bitrix24.ru/rest/16/{api_token}/tasks.task.list?filter[title]={title}&filter[tag]=bot")
-                        rjson = response.json()
-                        #print("list = ", rjson)
-                        message = gen_message_from_tasks(rjson["result"]["tasks"], task_id)
+
+                        for ci, tag in enumerate(tags):
+                            response = requests.get(f"https://qmioc.bitrix24.ru/rest/16/{api_token}/tasks.task.list?filter[title]={title}&filter[tag]={tag}")
+                            rjson = response.json()
+                            tasks = rjson["result"]["tasks"]
+                            if len(tasks) > 0:
+                                message = gen_message_from_tasks(tasks, task_id)
+                                send(message, chat_ids[ci])
+
                 else:
                     message = "ERROR:2"
-            if len(message) > 0:
-                send(message)
         else:
             print("ERROR:ILLEGAL ACCESS")
         return "Webhook received!"
