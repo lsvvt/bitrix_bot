@@ -36,7 +36,7 @@ def get_users(user_info):
     return user_info["name"]
 
 
-def gen_message_from_tasks(tasks):
+def gen_message_from_tasks(tasks, task_id):
     message = ""
     responsible_users = []
 
@@ -87,7 +87,7 @@ def webhook():
                         response = requests.get(f"https://qmioc.bitrix24.ru/rest/16/{api_token}/tasks.task.list?filter[title]={title}")
                         rjson = response.json()
                         #print("list = ", rjson)
-                        message = gen_message_from_tasks(rjson["result"]["tasks"])
+                        message = gen_message_from_tasks(rjson["result"]["tasks"], task_id)
                 else:
                     message = "ERROR:2"
 
