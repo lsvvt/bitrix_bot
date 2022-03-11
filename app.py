@@ -62,7 +62,7 @@ def send(msg):
         bot.send_message(chat_id, msg, parse_mode='HTML')
 
 def get_users(user_info):
-    return user_info["ID"]
+    return user_info["id"]
 
 
 def gen_message_from_tasks(tasks, task_id):
