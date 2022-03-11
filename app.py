@@ -36,6 +36,31 @@ def get_users(user_info):
     return user_info["name"]
 
 
+def gen_message_from_tasks(tasks):
+    responsible_users = []
+    for task in tasks:
+        responsible_users.append(get_users(task["responsible"]))
+
+    responsible_users = " ".join(responsible_users)
+
+    task = tasks[0]
+    
+    title = form_html(task["title"], "i")
+    message += f"{form_html('Новая задача', 'b')} (№{task_id}) для {responsible_users}: {title}"
+
+    if len(task["group"]) > 0:
+        group = form_html(form_html(task["group"]["name"], "b"), "i")
+        message += f",  в рамках проекта {group}"
+    message += "."
+
+    if not task["deadline"] is None:
+        deadline = task["deadline"]
+        deadline = datetime.datetime.strptime(deadline[:-6], '%Y-%m-%dT%H:%M:%S')
+
+        delta = str(deadline - datetime.datetime.now())[:-7].replace("days", "дней")
+        message += f" Крайний срок: {form_html(deadline.strftime('%d.%m.%Y'), 'b')}, через {form_html(delta, 'b')}"
+
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     if request.method == 'POST':
@@ -58,24 +83,7 @@ def webhook():
                         response = requests.get(f"https://qmioc.bitrix24.ru/rest/16/{api_token}/tasks.task.list?filter[title]={title}")
                         rjson = response.json()
                         #print("list = ", rjson)
-                        for task in rjson["result"]["tasks"]:
-                            print("ksk", task)
-                            responsible_users = get_users(task["responsible"])
-                            title = form_html(task["title"], "i")
-                            message += f"{form_html('Новая задача', 'b')} (№{task_id}) для {responsible_users}: {title}"
-
-                            if len(task["group"]) > 0:
-                                group = form_html(form_html(task["group"]["name"], "b"), "i")
-                                message += f",  в рамках проекта {group}"
-                            message += "."
-
-                            if not task["deadline"] is None:
-                                deadline = task["deadline"]
-                                deadline = datetime.datetime.strptime(deadline[:-6], '%Y-%m-%dT%H:%M:%S')
-
-                                delta = str(deadline - datetime.datetime.now())[:-7].replace("days", "дней")
-                                message += f" Крайний срок: {form_html(deadline.strftime('%d.%m.%Y'), 'b')}, через {form_html(delta, 'b')}"
-
+                        message = gen_message_from_tasks(rjson["result"]["tasks"])
                 else:
                     message = "ERROR:2"
 
