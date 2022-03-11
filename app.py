@@ -37,7 +37,9 @@ def get_users(user_info):
 
 
 def gen_message_from_tasks(tasks):
+    message = ""
     responsible_users = []
+
     for task in tasks:
         responsible_users.append(get_users(task["responsible"]))
 
@@ -59,6 +61,8 @@ def gen_message_from_tasks(tasks):
 
         delta = str(deadline - datetime.datetime.now())[:-7].replace("days", "дней")
         message += f" Крайний срок: {form_html(deadline.strftime('%d.%m.%Y'), 'b')}, через {form_html(delta, 'b')}"
+
+    return message
 
 
 @app.route('/webhook', methods=['POST'])
