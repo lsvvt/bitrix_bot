@@ -23,6 +23,35 @@ def form_html(text, arg):
     return f'<{arg}>' + text + f'</{arg}>'
 
 
+tg_users = {
+"1"  :  733848225,  # Михаил Медведев Геннадьевич
+"16" :  363014626,  # Тимофей Лосев Валерьевич
+"18" :  465806181,  # Василий Чалый Антонович
+"10" :  829059603,  # Николай Кривощапов Владиславович
+"14" : 1096418087,  # Артем Куницын Юрьевич
+"20" :  425815299,  # Юлия Вельмискина Андреевна
+"22" :  336838433,  # Игорь Герасимов None
+"24" :  650585182,  # Вадим Малышев None
+"26" :  183798994,  # Алексей Лисов Андреевич
+"30" :  886960157,  # 1 Егор Елисеев None
+"34" :  286436943,  # Данис Зарипов Уралович
+"40" : 1388935294,  # 0 Евгений Епифанов Юрьевич
+"44" :  760757733,  # Павел Радзиковицкий Михайлович
+"46" :  886960157,  # 1 Egor Eliseev Александрович
+"48" :  886960157,  # 1 Егор Елисеев None
+"50" : 1226606480,  # Ксения Бурьяноватая Евгеньевна
+"58" :  466726448,  # Владимир Тимашев Игоревич
+"62" : 1388935294,  # 0 Евгений Епифанов None
+"64" :  770503884,  # Иван Беспалов None
+"66" :  546004298,  # Alexander Klikushin None
+"68" :  397871650,  # Игорь Мезенцев None
+"70" :  436772955,  # Георгий Слушко None
+}
+
+def form_name(id, name):
+    return f'<a href="tg://user?id={tg_users[id]}">{name}</a>'
+
+
 
 def send(msg):
     """
@@ -33,7 +62,7 @@ def send(msg):
         bot.send_message(chat_id, msg, parse_mode='HTML')
 
 def get_users(user_info):
-    return user_info["name"]
+    return user_info["ID"]
 
 
 def gen_message_from_tasks(tasks, task_id):
@@ -41,9 +70,9 @@ def gen_message_from_tasks(tasks, task_id):
     responsible_users = []
 
     for task in tasks:
-        responsible_users.append(get_users(task["responsible"]))
+        responsible_users.append(form_name(get_users(task["responsible"])))
 
-    responsible_users = " ".join(responsible_users)
+    responsible_users = ", ".join(responsible_users)
 
     task = tasks[0]
     
