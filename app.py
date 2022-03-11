@@ -72,9 +72,9 @@ def webhook():
         if request.form['auth[application_token]'] == app_token:
             print(request.form)
             data = request.form
-            message = "Ничего не произошло"
-            if data["event"] == "ONTASKCOMMENTADD":
-                message = "Новый комментарий"
+            message = ""
+            # if data["event"] == "ONTASKCOMMENTADD":
+            #     message = "Новый комментарий"
             if data["event"] == "ONTASKADD":
                 message = ""
                 task_id = data["data[FIELDS_AFTER][ID]"]
@@ -84,15 +84,15 @@ def webhook():
                     title = rjson["result"]["task"]["title"]
                     print(rjson)
                     if rjson["result"]["task"]["parentId"] is None:
-                        # print("resp = ", f"https://qmioc.bitrix24.ru/rest/16/{api_token}/tasks.task.list?filter[title]={title}")
+                        print("resp = ", f"https://qmioc.bitrix24.ru/rest/16/{api_token}/tasks.task.list?filter[title]={title}")
                         response = requests.get(f"https://qmioc.bitrix24.ru/rest/16/{api_token}/tasks.task.list?filter[title]={title}&filter[tag]=bot")
                         rjson = response.json()
                         #print("list = ", rjson)
                         message = gen_message_from_tasks(rjson["result"]["tasks"], task_id)
                 else:
                     message = "ERROR:2"
-
-            send(message)
+            if len(message) > 0:
+                send(message)
         else:
             print("ERROR:ILLEGAL ACCESS")
         return "Webhook received!"
